@@ -1,4 +1,3 @@
-import { AuthScreen } from "@/components/AuthScreen/AuthScreen";
 import { db } from "@/utils/instanddb";
 import { Redirect } from "expo-router";
 
@@ -10,7 +9,7 @@ export default function Index() {
       </db.SignedIn>
 
       <db.SignedOut>
-        <AuthScreen />
+        <Redirect href="/(auth)" />
       </db.SignedOut>
     </>
   );

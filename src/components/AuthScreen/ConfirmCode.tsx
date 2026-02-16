@@ -1,75 +1,105 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
-import { db } from "@/utils/instanddb";
-import { useState } from "react";
-import { Alert, Button, Text, TextInput, View } from "react-native";
+type CodeStepProps = {
+  inputs: React.RefObject<(TextInput | null)[]>;
+  code: string[];
+  handleBackspace: (value: string, index: number) => void;
+  handleChange: (value: string, index: number) => void;
+  onResend: () => void;
+};
 
-const CodeStep = ({ sentEmail }: { sentEmail: string }) => {
-  const [code, setCode] = useState("");
+export const CodeStep = ({
+  handleBackspace,
+  handleChange,
+  onResend,
+  code,
+  inputs,
+}: CodeStepProps) => {
+  const [seconds, setSeconds] = useState(30);
+  useEffect(() => {
+    if (seconds === 0) return;
 
-  const handleSubmitCode = async () => {
-    const trimmed = code.trim();
+    const timer = setInterval(() => {
+      setSeconds((prev) => prev - 1);
+    }, 1000);
 
-    if (!trimmed) {
-      Alert.alert("Code required");
-      return;
-    }
+    return () => clearInterval(timer);
+  }, [seconds]);
 
-    try {
-      await db.auth.signInWithMagicCode({
-        email: sentEmail,
-        code: trimmed,
-      });
-    } catch (err: any) {
-      Alert.alert("Error", err.body?.message ?? "Invalid code");
-    }
-  };
-
-  const handleResend = async () => {
-    try {
-      await db.auth.sendMagicCode({ email: sentEmail });
-      Alert.alert("Code resent");
-    } catch {
-      Alert.alert("Failed to resend code");
-    }
+  const handleResend = () => {
+    if (seconds > 0) return;
+    onResend();
+    setSeconds(30);
   };
 
   return (
-    <View className="mt-8 w-full">
-      {/* Title */}
-      <Text className="text-2xl font-bold text-center mb-2">
-        Verify your email
-      </Text>
-
-      {/* Subtitle */}
-      <Text className="text-gray-500 text-center mb-6">
-        We sent a verification code to{" "}
-        <Text className="font-semibold text-black">{sentEmail}</Text>
-      </Text>
-
-      {/* Input */}
-      <TextInput
-        placeholder="Enter 6-digit code"
-        keyboardType="number-pad"
-        maxLength={6}
-        className="border border-gray-300 rounded-xl px-4 py-4 text-center text-xl tracking-widest"
-        value={code}
-        onChangeText={setCode}
-      />
-
-      {/* Confirm Button */}
-      <View className="mt-6">
-        <Button title="Confirm" onPress={handleSubmitCode} />
+    <View style={styles.container}>
+      {/* OTP Inputs */}
+      <View className="flex-row justify-between">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <TextInput
+            key={index}
+            ref={(ref) => {
+              inputs.current[index] = ref;
+            }}
+            className="
+              w-14 h-16
+              rounded-2xl
+              border border-gray-300
+              dark:border-gray-600
+              bg-white dark:bg-gray-800
+              text-center
+              text-2xl
+              font-bold
+              text-gray-900 dark:text-white
+              focus:border-blue-500
+              shadow-sm
+            "
+            keyboardType="number-pad"
+            maxLength={1}
+            value={code[index]}
+            onChangeText={(value) => handleChange(value, index)}
+            onKeyPress={({ nativeEvent }) =>
+              nativeEvent.key === "Backspace" &&
+              handleBackspace(code[index], index)
+            }
+          />
+        ))}
       </View>
 
-      {/* Resend */}
-      <View className="mt-4 items-center">
-        <Text className="text-blue-500 font-semibold" onPress={handleResend}>
-          Resend code
-        </Text>
+      {/* Resend Section */}
+      <View className="items-center mt-6">
+        {seconds > 0 ? (
+          <Text className="text-gray-400">Resend code in {seconds}s</Text>
+        ) : (
+          <TouchableOpacity onPress={handleResend}>
+            <Text className="text-blue-500 font-semibold">Resend Code</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
 };
 
-export default CodeStep;
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 20,
+  },
+  input: {
+    width: 50,
+    height: 60,
+    borderWidth: 1,
+    borderRadius: 12,
+    textAlign: "center",
+    fontSize: 24,
+  },
+});
