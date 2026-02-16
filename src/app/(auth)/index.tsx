@@ -1,5 +1,5 @@
-import { CodeStep } from "@/components/AuthScreen/ConfirmCode";
-import { EmailStep } from "@/components/AuthScreen/EmailStep";
+import { CodeStep } from "@/components/auth/ConfirmCode";
+import { EmailStep } from "@/components/auth/EmailStep";
 import { db } from "@/utils/instanddb";
 import { router } from "expo-router";
 import React, { useRef, useState } from "react";
