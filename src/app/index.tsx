@@ -1,9 +1,17 @@
-import { Text, View } from "react-native";
+import { AuthScreen } from "@/components/AuthScreen/AuthScreen";
+import { db } from "@/utils/instanddb";
+import { Redirect } from "expo-router";
 
-export default function HomeScreen() {
+export default function Index() {
   return (
-    <View className="flex-1 justify-center items-center">
-      <Text>hello ter</Text>
-    </View>
+    <>
+      <db.SignedIn>
+        <Redirect href="/(app)" />
+      </db.SignedIn>
+
+      <db.SignedOut>
+        <AuthScreen />
+      </db.SignedOut>
+    </>
   );
 }
