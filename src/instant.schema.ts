@@ -2,6 +2,7 @@
 
 import { i } from "@instantdb/react-native";
 
+
 const _schema = i.schema({
   entities: {
     $files: i.entity({
@@ -13,8 +14,15 @@ const _schema = i.schema({
       imageURL: i.string().optional(),
       type: i.string().optional(),
     }),
-    colors: i.entity({
-      value: i.string().optional(),
+    profiles: i.entity({
+      displayName: i.string(),
+    }),
+    channels: i.entity({
+      name: i.string().indexed(),
+    }),
+    messages: i.entity({
+      content: i.string(),
+      timestamp: i.number().indexed(),
     }),
   },
   links: {
@@ -31,11 +39,57 @@ const _schema = i.schema({
         label: "linkedGuestUsers",
       },
     },
+    userProfile: {
+      forward: {
+        on: "profiles",
+        has: "one",
+        label: "user",
+        onDelete: "cascade",
+      },
+      reverse: {
+        on: "$users",
+        has: "one",
+        label: "profile",
+      },
+    },
+    authorMessages: {
+      forward: {
+        on: "messages",
+        has: "one",
+        label: "author",
+        onDelete: "cascade",
+      },
+      reverse: {
+        on: "profiles",
+        has: "many",
+        label: "messages",
+      },
+    },
+    channelMessages: {
+      forward: {
+        on: "messages",
+        has: "one",
+        label: "channel",
+        onDelete: "cascade",
+      },
+      reverse: {
+        on: "channels",
+        has: "many",
+        label: "messages",
+      },
+    },
   },
-  rooms: {},
+  rooms: {
+    chat: {
+      presence: i.entity({
+        profileId: i.string(),
+        displayName: i.string(),
+      }),
+    },
+  },
 });
 
-// This helps TypeScript display nicer intellisense
+// This helps Typescript display nicer intellisense
 type _AppSchema = typeof _schema;
 interface AppSchema extends _AppSchema {}
 const schema: AppSchema = _schema;
