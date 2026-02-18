@@ -35,13 +35,6 @@ export default function Index() {
 
           <Text className="text-base font-medium mb-3">Channels</Text>
 
-          <TouchableOpacity
-            onPress={() => router.push("/(app)/channel")}
-            className="bg-blue-400 py-3 rounded-lg mb-3"
-          >
-            <Text className="text-white text-center">Open Channel</Text>
-          </TouchableOpacity>
-
           <View className="   flex-1 my-2 bg-white shadow-2xl p-4 rounded-md">
             <Text className="m-2">Channel Online 🟢</Text>
             {channels.length == 0 ? (
@@ -49,7 +42,7 @@ export default function Index() {
             ) : (
               <View>
                 {channels.map((item) => (
-                  <ChannelCard channel={item.name} key={item.id} />
+                  <ChannelCard channel={item.name} key={item.id} id={item.id} />
                 ))}
               </View>
             )}
