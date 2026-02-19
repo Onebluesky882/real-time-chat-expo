@@ -1,18 +1,10 @@
-import { Stack, useLocalSearchParams } from "expo-router";
-import React from "react";
+import { Tabs } from "expo-router"; // ✅ เปลี่ยนจาก Stack เป็น Tabs
 
 export default function _layout() {
-  const { channel } = useLocalSearchParams();
   return (
-    <Stack>
-      <Stack.Screen name="index" />
-      <Stack.Screen
-        name="[channel]"
-        options={{
-          headerBackVisible: true,
-          headerBackTitle: "back",
-        }}
-      />
-    </Stack>
+    <Tabs>
+      <Tabs.Screen name="index" />
+      <Tabs.Screen name="[channel]" options={{ title: "Home" }} />
+    </Tabs>
   );
 }

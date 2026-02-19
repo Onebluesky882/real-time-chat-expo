@@ -20,9 +20,10 @@ export function MessageInput({ onSend }: Prop) {
         placeholder="Type message"
         value={text}
         onChangeText={setText}
-        className="flex-1 border border-gray-300 rounded-full px-4 py-3 "
+        onSubmitEditing={handleSend}
+        returnKeyType="send"
+        className="flex-1 border border-gray-300 rounded-full px-4 py-3"
       />
-
       <TouchableOpacity
         onPress={handleSend}
         className="bg-blue-500 p-3 rounded-full"
