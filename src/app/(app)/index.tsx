@@ -1,8 +1,9 @@
 import { ChannelCard } from "@/components/Channel/ChannelCard";
+import { CreateChannel } from "@/components/Channel/CreateChannel";
 import { db } from "@/utils/instanddb";
-import { router } from "expo-router";
-import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Redirect, router } from "expo-router";
+import React, { useEffect, useRef } from "react";
+import { Animated, Text, TouchableOpacity, View } from "react-native";
 
 export default function Index() {
   const { user } = db.useAuth();
@@ -18,6 +19,27 @@ export default function Index() {
 
   const { data, isLoading, error } = db.useQuery({ channels: {} });
 
+  const opacity = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(opacity, {
+          toValue: 0.2,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+      ]),
+    ).start();
+  }, []);
+  if (!user) {
+    return <Redirect href="/(auth)" />;
+  }
   if (isLoading) {
     return <Text>loading</Text>;
   }
@@ -28,15 +50,33 @@ export default function Index() {
 
   return (
     <View className="flex-1 bg-white">
-      <View className="flex-1 px-5 pt-10">
+      <View className="flex-1 px-4 mt-4">
         {/* TOP SECTION */}
         <View className="flex-1">
-          <Text className="text-gray-500 mb-8">Hi {user?.email}</Text>
+          <View className=" flex-row items-center justify-between">
+            <Text className="text-gray-500 mb-2">Hi {user?.email}</Text>
+            <TouchableOpacity
+              onPress={handleLogout}
+              className="bg-red-500  px-2 py-1 rounded-md "
+            >
+              <Text className="text-center text-gray-100 ">Logout</Text>
+            </TouchableOpacity>
+          </View>
 
-          <Text className="text-base font-medium mb-3">Channels</Text>
-
+          <CreateChannel handleNewChannel={() => {}} />
           <View className="   flex-1 my-2 bg-white shadow-2xl p-4 rounded-md">
-            <Text className="m-2">Channel Online 🟢</Text>
+            <View className="flex-row justify-between items-center">
+              <View className="flex-row items-center ">
+                <Text className="m-2">Channel Online</Text>
+
+                <Animated.View
+                  style={{ opacity }}
+                  className="w-2 h-2 bg-green-500 rounded-full"
+                />
+              </View>
+
+              <Text className="text-gray-500">Active : 127</Text>
+            </View>
             {channels.length == 0 ? (
               <Text>No Channel</Text>
             ) : (
@@ -48,14 +88,6 @@ export default function Index() {
             )}
           </View>
         </View>
-
-        {/* BOTTOM SECTION */}
-        <TouchableOpacity
-          onPress={handleLogout}
-          className="bg-red-500 py-3 rounded-2xl mb-6"
-        >
-          <Text className="text-center text-gray-200 ">Logout</Text>
-        </TouchableOpacity>
       </View>
     </View>
   );
