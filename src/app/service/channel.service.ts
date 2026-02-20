@@ -1,7 +1,7 @@
 import { db } from "@/utils/instanddb";
 import { id } from "@instantdb/react-native";
 
-export default async function createChannel({ name }: { name: string }) {
+export default async function createChannel(name: string) {
   const channelId = id();
 
   const trimmedName = name.trim();

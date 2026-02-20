@@ -5,6 +5,7 @@ import { db } from "@/utils/instanddb";
 import { Redirect, router } from "expo-router";
 import React, { useEffect, useRef } from "react";
 import { Animated, Text, TouchableOpacity, View } from "react-native";
+import createChannel from "../service/channel.service";
 
 export default function Index() {
   const { user } = db.useAuth();
@@ -21,6 +22,14 @@ export default function Index() {
   const { data, isLoading, error } = db.useQuery({ channels: {} });
 
   const opacity = useRef(new Animated.Value(1)).current;
+
+  const handleCreateChannel = async (name: string) => {
+    try {
+      await createChannel(name);
+    } catch (err) {
+      console.log("create channel error", err);
+    }
+  };
 
   useEffect(() => {
     Animated.loop(
@@ -42,7 +51,7 @@ export default function Index() {
     return <Redirect href="/(auth)" />;
   }
   if (isLoading) {
-    return  <ChannelLoading />
+    return <ChannelLoading />;
   }
   if (error) {
     return <Text>something has problem!!</Text>;
@@ -64,7 +73,7 @@ export default function Index() {
             </TouchableOpacity>
           </View>
 
-          <CreateChannel handleNewChannel={() => {}} />
+          <CreateChannel handleNewChannel={handleCreateChannel} />
           <View className="   flex-1 my-2 bg-white shadow-2xl p-4 rounded-md">
             <View className="flex-row justify-between items-center">
               <View className="flex-row items-center ">
@@ -82,7 +91,9 @@ export default function Index() {
               <Text>No Channel</Text>
             ) : (
               <View>
-                {channels.map((item) => (
+                  {channels
+                    .reverse()
+                    .map((item) => (
                   <ChannelCard channel={item.name} key={item.id} id={item.id} />
                 ))}
               </View>
