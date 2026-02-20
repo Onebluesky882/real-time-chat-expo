@@ -9,6 +9,7 @@ import React, { useRef } from "react";
 import { Text, View } from "react-native";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import sendMessage from "../service/chat.service";
+import { ChannelLoading } from "@/components/ChannelLoading";
 
 export type Messages = InstaQLEntity<AppSchema, "messages">;
 export default function channel() {
@@ -55,9 +56,9 @@ export default function channel() {
   );
 
   const messages = data?.messages ?? [];
-  if (isLoading) return <Text>loading</Text>;
+  if (isLoading) return <ChannelLoading />;
   if (!channelId) {
-    return <Text>Loading...</Text>;
+    return <ChannelLoading />;
   }
 
   const channelTitle = channelData?.channels?.[0]?.name;

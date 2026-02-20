@@ -1,5 +1,6 @@
 import { ChannelCard } from "@/components/Channel/ChannelCard";
 import { CreateChannel } from "@/components/Channel/CreateChannel";
+import { ChannelLoading } from "@/components/ChannelLoading";
 import { db } from "@/utils/instanddb";
 import { Redirect, router } from "expo-router";
 import React, { useEffect, useRef } from "react";
@@ -41,7 +42,7 @@ export default function Index() {
     return <Redirect href="/(auth)" />;
   }
   if (isLoading) {
-    return <Text>loading</Text>;
+    return  <ChannelLoading />
   }
   if (error) {
     return <Text>something has problem!!</Text>;
