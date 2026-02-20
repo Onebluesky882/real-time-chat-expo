@@ -3,7 +3,7 @@ import { EmailStep } from "@/components/auth/EmailStep";
 import { db } from "@/utils/instanddb";
 import { router } from "expo-router";
 import React, { useRef, useState } from "react";
-import { Alert, Text, TextInput, View } from "react-native";
+import { Alert, TextInput, View } from "react-native";
 
 export default function AuthScreen() {
   const [email, setEmail] = useState("");
@@ -72,8 +72,7 @@ export default function AuthScreen() {
   };
 
   return (
-    <View className="justify-center w-full p-2">
-      <Text className="font-bold text-2xl">Auth screen</Text>
+    <View className="justify-center w-full p-2 bg-white flex-1 ">
       {!sentEmail ? (
         <EmailStep
           email={email}

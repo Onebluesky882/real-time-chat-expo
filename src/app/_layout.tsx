@@ -13,15 +13,15 @@ import "../global.css";
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   return (
-    <SafeAreaProvider>
-      <KeyboardProvider>
+    <KeyboardProvider>
+      <SafeAreaProvider>
         <ThemeProvider
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         >
           <AnimatedSplashOverlay />
           <Stack screenOptions={{ headerShown: false }} />
         </ThemeProvider>
-      </KeyboardProvider>
-    </SafeAreaProvider>
+      </SafeAreaProvider>
+    </KeyboardProvider>
   );
 }

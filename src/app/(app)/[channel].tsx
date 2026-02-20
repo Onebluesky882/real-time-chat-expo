@@ -1,4 +1,5 @@
 import { MessageBox } from "@/components/Channel/MessageBox";
+import { ChannelLoading } from "@/components/ChannelLoading";
 import { MessageInput } from "@/components/MessageInput/MessageInput";
 import { AppSchema } from "@/instant.schema";
 import { db } from "@/utils/instanddb";
@@ -6,8 +7,7 @@ import { InstaQLEntity } from "@instantdb/react-native";
 import { FlashList, FlashListRef } from "@shopify/flash-list";
 import { Stack, useLocalSearchParams } from "expo-router";
 import React, { useRef } from "react";
-import { Text, View } from "react-native";
-import { KeyboardAvoidingView } from "react-native-keyboard-controller";
+import { View } from "react-native";
 import sendMessage from "../service/chat.service";
 
 export type Messages = InstaQLEntity<AppSchema, "messages">;
@@ -55,9 +55,9 @@ export default function channel() {
   );
 
   const messages = data?.messages ?? [];
-  if (isLoading) return <Text>loading</Text>;
+  if (isLoading) return <ChannelLoading />;
   if (!channelId) {
-    return <Text>Loading...</Text>;
+    return <ChannelLoading />;
   }
 
   const channelTitle = channelData?.channels?.[0]?.name;
@@ -69,32 +69,33 @@ export default function channel() {
           title: channelTitle,
         }}
       />
-      <KeyboardAvoidingView style={{ flex: 1 }}>
-        <View className="flex-1">
-          <FlashList<(typeof messages)[number]>
-            data={messages}
-            ref={listRef}
-            renderItem={({ item }) => (
-              <MessageBox
-                id={item.id}
-                content={item.content}
-                currentUserId={user?.id ?? ""}
-                author={item.author}
-                timestamp={item.timestamp}
-              />
-            )}
-            onContentSizeChange={() =>
-              listRef.current?.scrollToEnd({ animated: true })
-            }
-          />
-        </View>
+
+      <View className="flex-1">
+        <FlashList<(typeof messages)[number]>
+          data={messages}
+          ref={listRef}
+          renderItem={({ item }) => (
+            <MessageBox
+              id={item.id}
+              content={item.content}
+              currentUserId={user?.id ?? ""}
+              author={item.author}
+              timestamp={item.timestamp}
+            />
+          )}
+          onContentSizeChange={() =>
+            listRef.current?.scrollToEnd({ animated: true })
+          }
+        />
+      </View>
+      <View className="flex-1 justify-end">
         <MessageInput
           onSend={(text) => {
-            if (!channelId) return;
-            sendMessage(text, profileId!, channelId);
+            if (!channelId || !profileId) return;
+            sendMessage(text, profileId, channelId);
           }}
         />
-      </KeyboardAvoidingView>
+      </View>
     </>
   );
 }
